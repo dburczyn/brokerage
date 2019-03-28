@@ -764,7 +764,9 @@ section.cms-boxes .boxes-align {
 section.cms-boxes .small-box,
 section.cms-boxes .large-box {
   max-width: 220px;
-  max-height: 220px;
+  max-height: 320px;
+  min-width: 220px;
+  min-height: 320px;
   margin: 0 auto;
   text-align: center;
 }
@@ -805,4 +807,9 @@ section.cms-boxes .cms-boxes-items:hover {
 .modal-dialog {
     width: 90%;
     margin: 30px auto;
+}
+
+img{
+  max-width:1600px;
+  max-height:250px;
 }
