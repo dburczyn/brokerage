@@ -13,6 +13,7 @@ var options = {
   minute: 'numeric',
   second: 'numeric'
 };
+
 function getSafe(fn, defaultVal) {
   try {
     return fn();
@@ -20,6 +21,7 @@ function getSafe(fn, defaultVal) {
     return defaultVal;
   }
 }
+
 function readCookie(name) {
   var nameEQ = encodeURIComponent(name) + "=";
   var ca = document.cookie.split(';');
@@ -87,7 +89,23 @@ $(function () {
           var name = entry.updatedat + "_" + entry.createdat + "_" + entry.datetype + "_" + entry.name + "_" + entry.type;
           var parsedcreatedat = new Date(parseInt(entry.createdat)).toLocaleDateString(locale, options);
           var parsedupdatedat = new Date(parseInt(entry.updatedat)).toLocaleDateString(locale, options);
-          var list = '<div class="col-md-3 cms-boxes-outer">                <div class="cms-boxes-items cms-features" style="background-color:#c4d1cf">                  <div class="boxes-align" data-toggle="modal" data-target="#expandedTile" id="' + name + '">                    <div class="small-box">             <br>         <i class="far fa-calendar-alt fa-3x">&nbsp;</i>                        <h3>' + entry.name + '</h3><h3> Date: ' + entry.datetype + '</h3><h3>Last update: ' + parsedupdatedat + '</h3><h3> Created: ' + parsedcreatedat + '</h3>                    </div>                  </div>                </div>              </div>  ';
+          var bgcolor = "";
+          var icon = "";
+          var handle = "";
+          if (entry.type === "event") {
+            bgcolor = "#c4d1cf";
+            icon = '<i class="far fa-calendar-alt fa-3x">&nbsp;</i>';
+            handle = "Date: ";
+          } else if (entry.type === "job") {
+            bgcolor = "#c9cadc";
+            icon = '<i class="fas fa-briefcase fa-3x">&nbsp;</i>';
+            handle = "Type: ";
+          } else if (entry.type === "training") {
+            bgcolor = "#c5dee7";
+            icon = '<i class="fas fa-chalkboard-teacher fa-3x">&nbsp;</i>';
+            handle = "Date: ";
+          }
+          var list = '<div class="col-md-3 cms-boxes-outer">                <div class="cms-boxes-items cms-features" style="background-color:' + bgcolor + '">                  <div class="boxes-align" data-toggle="modal" data-target="#expandedTile" id="' + name + '">                    <div class="small-box">             <br>         ' + icon + '                       <h3>' + entry.name + '</h3><h3>' + handle + entry.datetype + '</h3><h3>Last update: ' + parsedupdatedat + '</h3><h3> Created: ' + parsedcreatedat + '</h3>                    </div>                  </div>                </div>              </div>  ';
           $(list).appendTo("#foo");
         });
       },
@@ -135,8 +153,20 @@ $(function () {
         break;
       }
     }
+    var handler;
+    if (type === 'event' || type === 'training') {
+      handler = $('#eventdate').val();
+    } else if (type === 'job') {
+      var jobtypesradio = document.getElementsByName('jobtype');
+      for (var j = 0, l = jobtypesradio.length; i < l; i++) {
+        if (jobtypesradio[i].checked) {
+          handler = jobtypesradio[i].value;
+          break;
+        }
+      }
+    }
     $.ajax({
-      url: repourl + '/' + $('#createdat').val() + '_' + $('#createdat').val() + '_' + $('#eventdate').val() + '_' + $('#filename').val() + '_' + type,
+      url: repourl + '/' + $('#createdat').val() + '_' + $('#createdat').val() + '_' + handler + '_' + $('#filename').val() + '_' + type,
       beforeSend: function (request) {
         request.setRequestHeader("Authorization", "token " + authorizationtoken);
       },
@@ -177,15 +207,44 @@ $(function () {
     document.getElementById("updatedatedited").value = updatedat;
     document.getElementById("createdatedited").value = currentresponse.name.split("_")[1];
     document.getElementById("filenameedited").value = currentresponse.name.split("_")[3];
-    document.getElementById("eventdateedited").value = currentresponse.name.split("_")[2];
     document.getElementById("filecontentedited").value = unencodedcontent.description;
     document.getElementById("emailaddressedited").value = unencodedcontent.email;
     document.getElementById("eventpictureedited").value = unencodedcontent.picture;
     var typesradionew = document.getElementsByName('typeedited');
+    var jobtypeedited;
     for (var i = 0, length = typesradionew.length; i < length; i++) {
       if (currentresponse.name.split("_")[4] === typesradionew[i].value) {
         typesradionew[i].checked = true;
+        jobtypeedited = typesradionew[i].value;
+        console.log(jobtypeedited);
         break;
+      }
+    }
+    if (jobtypeedited === 'event') {
+      $("#extraeditformfields").empty();
+      inp = '    <p>Event date: </p><input type="date" id="eventdateedited" name="eventdateedited" required><br>';
+      $(inp).appendTo("#extraeditformfields");
+    } else if (jobtypeedited === 'training') {
+      $("#extraeditformfields").empty();
+      inp = '    <p>Training date: </p><input type="date" id="eventdateedited" name="eventdateedited" required><br>';
+      $(inp).appendTo("#extraeditformfields");
+    } else if (jobtypeedited === 'job') {
+      $("#extraeditformfields").empty();
+      inp = '    <p>Job type: </p><p><input type="radio" name="jobtypeedited" value="Employment" checked> Employment   <input type="radio" name="jobtypeedited" value="Training"> Training<br>    <input type="radio" name="jobtypeedited" value="Internship"> Internship<br><input type="radio" name="jobtypeedited" value="Master"> Master<br><input type="radio" name="jobtypeedited" value="PhD"> PhD<br> </p>';
+      $(inp).appendTo("#extraeditformfields");
+    }
+    if (jobtypeedited === 'event' || jobtypeedited === 'training') {
+      document.getElementById("eventdateedited").value = currentresponse.name.split("_")[2];
+    } else if (jobtypeedited === 'job') {
+      console.log("pajszlo");
+      var typeseditedradionew = document.getElementsByName('jobtypeedited');
+      for (var j = 0, l = typeseditedradionew.length; j < l; j++) {
+        console.log(currentresponse.name.split("_")[2]);
+        console.log(typeseditedradionew[j].value);
+        if (currentresponse.name.split("_")[2] === typeseditedradionew[j].value) {
+          typeseditedradionew[j].checked = true;
+          break;
+        }
       }
     }
   });
@@ -194,10 +253,10 @@ $(function () {
   $('#createbutton').on('click', function (e) {
     var createdat = new Date().getTime();
     e.preventDefault();
+    $("#extraformfields").empty();
     document.getElementById("createdat").value = createdat;
     document.getElementById("filename").value = "";
     document.getElementById("filecontent").value = "";
-    document.getElementById("eventdate").value = "";
     document.getElementById("emailaddress").value = "";
     document.getElementById("eventpicture").value = "";
     var typesradionew = document.getElementsByName('type');
@@ -225,8 +284,20 @@ $(function () {
         break;
       }
     }
+    var handler;
+    if (typeedited === 'event' || typeedited === 'training') {
+      handler = $('#eventdateedited').val();
+    } else if (typeedited === 'job') {
+      var jobtypesradio = document.getElementsByName('jobtypeedited');
+      for (var j = 0, l = jobtypesradio.length; i < l; i++) {
+        if (jobtypesradio[i].checked) {
+          handler = jobtypesradio[i].value;
+          break;
+        }
+      }
+    }
     $.ajax({
-      url: repourl + '/' + $('#updatedatedited').val() + '_' + currentresponse.name.split("_")[1] + '_' + $('#eventdateedited').val() + '_' + $('#filenameedited').val() + '_' + typeedited,
+      url: repourl + '/' + $('#updatedatedited').val() + '_' + currentresponse.name.split("_")[1] + '_' + handler + '_' + $('#filenameedited').val() + '_' + typeedited,
       beforeSend: function (request) {
         request.setRequestHeader("Authorization", "token " + authorizationtoken);
       },
@@ -251,6 +322,42 @@ $(function () {
 $(function () {
   $(document).ready(function () {
     $("#getevents").trigger("click");
+  });
+});
+$(function () {
+  var inp;
+  $('input[name="type"]').click(function (e) {
+    if (e.target.value === 'event') {
+      $("#extraformfields").empty();
+      inp = '    <p>Event date: </p><input type="date" id="eventdate" name="eventdate" required><br>';
+      $(inp).appendTo("#extraformfields");
+    } else if (e.target.value === 'training') {
+      $("#extraformfields").empty();
+      inp = '    <p>Training date: </p><input type="date" id="eventdate" name="eventdate" required><br>';
+      $(inp).appendTo("#extraformfields");
+    } else if (e.target.value === 'job') {
+      $("#extraformfields").empty();
+      inp = '    <p>Job type: </p><p><input type="radio" name="jobtype" value="Employment" checked> Employment   <input type="radio" name="jobtype" value="Training"> Training<br>    <input type="radio" name="jobtype" value="Internship"> Internship<br><input type="radio" name="jobtype" value="Master"> Master<br><input type="radio" name="jobtype" value="PhD"> PhD<br> </p>';
+      $(inp).appendTo("#extraformfields");
+    }
+  });
+  $(function () {
+    var inp;
+    $('input[name="typeedited"]').click(function (e) {
+      if (e.target.value === 'event') {
+        $("#extraeditformfields").empty();
+        inp = '    <p>Event date: </p><input type="date" id="eventdateedited" name="eventdateedited" required><br>';
+        $(inp).appendTo("#extraeditformfields");
+      } else if (e.target.value === 'training') {
+        $("#extraeditformfields").empty();
+        inp = '    <p>Training date: </p><input type="date" id="eventdateedited" name="eventdateedited" required><br>';
+        $(inp).appendTo("#extraeditformfields");
+      } else if (e.target.value === 'job') {
+        $("#extraeditformfields").empty();
+        inp = '    <p>Job type: </p><p><input type="radio" name="jobtypeedited" value="Employment" checked> Employment   <input type="radio" name="jobtypeedited" value="Training"> Training<br>    <input type="radio" name="jobtypeedited" value="Internship"> Internship<br><input type="radio" name="jobtypeedited" value="Master"> Master<br><input type="radio" name="jobtypeedited" value="PhD"> PhD<br> </p>';
+        $(inp).appendTo("#extraeditformfields");
+      }
+    });
   });
 });
 // $(function () {

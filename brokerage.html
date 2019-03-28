@@ -10,8 +10,7 @@
 </head>
 <body>
     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#createform" data-dismiss="modal"
-        id="createbutton">NEW
-        EVENT</button>
+        id="createbutton">NEW </button>
         <form id= "sortingform" action="">
             <h1>Sorting Type</h1>
             <input type="radio" name="sort" id="createdasc" value="createdasc"> Creation date ascending<br>
@@ -44,20 +43,19 @@
                     <form id="file_edit_form">
                          <input type="text" id="createdatedited" name="createdatedited" hidden><br>
                          <input type="text" id="updatedatedited" name="updatedatedited" hidden><br>
-                        File name:<br>
+                        <p>Name:<br></p>
                         <input type="text" id="filenameedited" name="filenameedited" title="Dont use underscore '_'" pattern="[^_]+" required ><br>
-                        Event type:<br>
+                        Type:<br></p>
                         <p><input type="radio" name="typeedited" value="job" required > Job<br>
                         <input type="radio" name="typeedited" value="event"> Event<br>
                         <input type="radio" name="typeedited" value="training"> Training<br>
                         <br></p>
-                        Event description:<br>
+                        <p>Description:<br></p>
                         <input type="text" id="filecontentedited" name="filecontentedited"><br>
-                        Picture:<br>
+                        <p>Picture:<br></p>
                         <input type="text" id="eventpictureedited" name="eventpictureedited"><br>
-                        Event date:<br>
-                        <input type="date" id="eventdateedited" name="eventdateedited" required><br>
-                        Contact:<br>
+                        <div id="extraeditformfields"></div>
+                        <p>Contact:<br> </p>
                         <input type="email" id="emailaddressedited" name="emailaddressedited"><br>
 
 
@@ -77,28 +75,28 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Advert info</h4>
+                    <h4 class="modal-title">Create form</h4>
                 </div>
                 <div class="modal-body" id="modd222">
                     <form id="event_create_form">
                         <input type="text" id="createdat" name="createdat" hidden><br>
 
-                        Event type:<br>
+                        <p>Type:</p>
                         <p><input type="radio" name="type" value="job" required > Job<br>
                         <input type="radio" name="type" value="event"> Event<br>
                         <input type="radio" name="type" value="training"> Training<br>
                         <br></p>
-                        Event name:<br>
+                    <p>Name:</p>
                         <input type="text" id="filename" name="filename" title="Dont use underscore '_'" pattern="[^_]+" required><br>
-                        Event description:<br>
+                    <p> Description:</p>
                         <input type="text" id="filecontent" name="filecontent"><br>
-                        Picture:<br>
+                    <p> Picture:</p>
                         <input type="text" id="eventpicture" name="eventpicture"><br>
-                        Event date:<br>
-                        <input type="date" id="eventdate" name="eventdate" required><br>
-                        Contact:<br>
+
+              <div id="extraformfields"></div>
+            <p>Contact:</p>
                         <input type="email" id="emailaddress" name="emailaddress"><br>
-                        <input type="submit" value="Create Event">
+                        <input type="submit" value="Create">
                     </form>
                 </div>
                 <div class="modal-footer">
