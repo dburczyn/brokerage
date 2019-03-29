@@ -1,4 +1,4 @@
-var authorizationtoken = ""; //store it securely, not in plaintext here !!
+var authorizationtoken = "b15219993204d4d121a0d6d586432ba8137f817f"; //store it securely, not in plaintext here !!
 var repourl = "https://api.github.com/repositories/175385549/contents/js"; // has to be exact, because link with username and repo name redirect, which is not handles properly by firefox and edge (chrome works ok)
 templatejson = {
   "title": "templatetitle"
@@ -85,6 +85,42 @@ $(function () {
             return -('' + a.updatedat).localeCompare(b.updatedat);
           });
         }
+
+        function isJob(value) {
+          if (value.type === "job"){
+          alert("job");
+          return value;}
+        }
+
+        function isEvent(value) {
+          if (value.type === "event"){
+          alert("event");
+          return value;}
+        }
+
+        function isTraining(value) {
+          if (value.type === "training"){
+          alert("training");
+          return value;}
+
+        }
+
+
+
+        if (document.getElementById('showjobs').checked) {
+          alert("showjobs");
+          resultsJSON=resultsJSON.filter(isJob);
+        } else if (document.getElementById('showevents').checked) {
+          alert("showevents");
+          resultsJSON= resultsJSON.filter(isEvent);
+        }else if (document.getElementById('showtrainings').checked) {
+          alert("showtrainings");
+          resultsJSON=resultsJSON.filter(isTraining);
+        }
+
+
+
+
         resultsJSON.forEach(function (entry) {
           var name = entry.updatedat + "_" + entry.createdat + "_" + entry.datetype + "_" + entry.name + "_" + entry.type;
           var parsedcreatedat = new Date(parseInt(entry.createdat)).toLocaleDateString(locale, options);
