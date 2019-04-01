@@ -3,7 +3,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="C:\gitprojects\brokerage\brokerage_css.css">
     <script type="text/javascript" src="C:\gitprojects\brokerage\brokerage_js.js"></script>
     <link rel="stylesheet" href="https://damianofalcioni.github.io/olive-jekyll-test/assets/css/main.css">
@@ -11,28 +12,45 @@
 <body>
     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#createform" data-dismiss="modal"
         id="createbutton">NEW </button>
-        <form id= "sortingform" action="">
-            <h1>Sorting Type</h1>
-            <input type="radio" name="sort" id="createdasc" value="createdasc"> Creation date ascending<br>
-            <input type="radio" name="sort" id="createddesc" value="createddesc"> Creation date descending<br>
-            <input type="radio" name="sort" id="updtedasc" value="updtedasc"> Update date ascending<br>
-            <input type="radio" name="sort" id="updteddesc" value="updteddesc"> Update date descending<br>
-            <input type="radio" name="sort" id="nameasc" value="nameasc"> Name ascending<br>
-            <input type="radio" name="sort" id="namedesc" value="namedesc"> Name descending<br>
-          </form>
-          <form id= "filterform" action="">
-            <h1>Display Type</h1>
-            <input type="radio" name="sort" id="showall" value="showall"> All<br>
-            <input type="radio" name="sort" id="showjobs" value="showjobs"> Job<br>
-            <input type="radio" name="sort" id="showevents" value="showevents"> Event<br>
-            <input type="radio" name="sort" id="showtrainings" value="showtrainings"> Training<br>
-          </form>
-          <button type="button" class="btn btn-info" id="getevents">Apply Filter</button>
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filtermodal"
+                        data-dismiss="modal" id="filtermodalbutton">Filter/Sort</button>
+    <div class="modal fade" id="filtermodal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Select Filters</h4>
+                </div>
+                <div class="modal-body" id="filtmod">
+                    <form id="sortingform" action="">
+                        <h1>Sorting Type</h1>
+                        <input type="radio" name="sort" id="createdasc" value="createdasc"> Creation date ascending<br>
+                        <input type="radio" name="sort" id="createddesc" value="createddesc"> Creation date descending<br>
+                        <input type="radio" name="sort" id="updtedasc" value="updtedasc"> Update date ascending<br>
+                        <input type="radio" name="sort" id="updteddesc" value="updteddesc"> Update date descending<br>
+                        <input type="radio" name="sort" id="nameasc" value="nameasc"> Name ascending<br>
+                        <input type="radio" name="sort" id="namedesc" value="namedesc"> Name descending<br>
+                    </form>
+                    <form id="filterform" action="">
+                        <h1>Display Type</h1>
+                        <input type="radio" name="sort" id="showall" value="showall"> All<br>
+                        <input type="radio" name="sort" id="showjobs" value="showjobs"> Job<br>
+                        <input type="radio" name="sort" id="showevents" value="showevents"> Event<br>
+                        <input type="radio" name="sort" id="showtrainings" value="showtrainings"> Training<br>
+                    </form>
+                    <button type="button" class="btn btn-info" id="getevents" data-dismiss="modal">Apply Filter</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="container">
-        <section class="cms-boxes" >
+        <section class="cms-boxes">
             <div class="container-fluid">
                 <!-- <div class="row"> -->
-                    <div class="ttiillee" id="foo">
+                <div class="ttiillee" id="foo">
                     <!-- </div> -->
                 </div>
             </div>
@@ -48,15 +66,16 @@
                 </div>
                 <div class="modal-body" id="modd222">
                     <form id="file_edit_form">
-                         <input type="text" id="createdatedited" name="createdatedited" hidden><br>
-                         <input type="text" id="updatedatedited" name="updatedatedited" hidden><br>
+                        <input type="text" id="createdatedited" name="createdatedited" hidden><br>
+                        <input type="text" id="updatedatedited" name="updatedatedited" hidden><br>
                         <p>Name:<br></p>
-                        <input type="text" id="filenameedited" name="filenameedited" title="Dont use underscore '_'" pattern="[^_]+" required ><br>
+                        <input type="text" id="filenameedited" name="filenameedited" title="Dont use underscore '_'"
+                            pattern="[^_]+" required><br>
                         Type:<br></p>
-                        <p><input type="radio" name="typeedited" value="job" required > Job<br>
-                        <input type="radio" name="typeedited" value="event"> Event<br>
-                        <input type="radio" name="typeedited" value="training"> Training<br>
-                        <br></p>
+                        <p><input type="radio" name="typeedited" value="job" required> Job<br>
+                            <input type="radio" name="typeedited" value="event"> Event<br>
+                            <input type="radio" name="typeedited" value="training"> Training<br>
+                            <br></p>
                         <p>Description:<br></p>
                         <input type="text" id="filecontentedited" name="filecontentedited"><br>
                         <p>Picture:<br></p>
@@ -64,8 +83,6 @@
                         <div id="extraeditformfields"></div>
                         <p>Contact:<br> </p>
                         <input type="email" id="emailaddressedited" name="emailaddressedited"><br>
-
-
                         <input type="submit" value="Upload Edited File">
                     </form>
                 </div>
@@ -87,21 +104,20 @@
                 <div class="modal-body" id="modd222">
                     <form id="event_create_form">
                         <input type="text" id="createdat" name="createdat" hidden><br>
-
                         <p>Type:</p>
-                        <p><input type="radio" name="type" value="job" required > Job<br>
-                        <input type="radio" name="type" value="event"> Event<br>
-                        <input type="radio" name="type" value="training"> Training<br>
-                        <br></p>
-                    <p>Name:</p>
-                        <input type="text" id="filename" name="filename" title="Dont use underscore '_'" pattern="[^_]+" required><br>
-                    <p> Description:</p>
+                        <p><input type="radio" name="type" value="job" required> Job<br>
+                            <input type="radio" name="type" value="event"> Event<br>
+                            <input type="radio" name="type" value="training"> Training<br>
+                            <br></p>
+                        <p>Name:</p>
+                        <input type="text" id="filename" name="filename" title="Dont use underscore '_'" pattern="[^_]+"
+                            required><br>
+                        <p> Description:</p>
                         <input type="text" id="filecontent" name="filecontent"><br>
-                    <p> Picture:</p>
+                        <p> Picture:</p>
                         <input type="text" id="eventpicture" name="eventpicture"><br>
-
-              <div id="extraformfields"></div>
-            <p>Contact:</p>
+                        <div id="extraformfields"></div>
+                        <p>Contact:</p>
                         <input type="email" id="emailaddress" name="emailaddress"><br>
                         <input type="submit" value="Create">
                     </form>
@@ -117,33 +133,31 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <img id="currentPhoto" src="#">
                     <!-- <i class="far fa-calendar-alt fa-3x">&nbsp;</i> -->
                 </div>
                 <div class="modal-body" id="modd">
-                    <h1 class="modal-title" id="modal-title">No name</h1>
-                        <h2 id="datetype">No input</h2>
-                        <p id="description">No description</p>
+                    <h1 class="modal-title" id="modal-title" style="text-align:center" >No name</h1>
+                    <h2 id="datetype" style="text-align:center">No input</h2>
+                    <p id="description">No description</p>
+                    <p class="page__date"><strong><svg class="svg-inline--fa fa-calendar-alt fa-w-14 fa-fw"
+                                aria-hidden="true" data-prefix="fas" data-icon="calendar-alt" role="img"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
+                                <path fill="currentColor"
+                                    d="M436 160H12c-6.6 0-12-5.4-12-12v-36c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48v36c0 6.6-5.4 12-12 12zM12 192h424c6.6 0 12 5.4 12 12v260c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V204c0-6.6 5.4-12 12-12zm116 204c0-6.6-5.4-12-12-12H76c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12H76c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm128 128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm128 128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40z">
+                                </path>
+                            </svg>
+                            Updated:</strong> <time id="dateofupdate">No update date</time>
                         <p class="page__date"><strong><svg class="svg-inline--fa fa-calendar-alt fa-w-14 fa-fw"
-                            aria-hidden="true" data-prefix="fas" data-icon="calendar-alt" role="img"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
-                            <path fill="currentColor"
-                                d="M436 160H12c-6.6 0-12-5.4-12-12v-36c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48v36c0 6.6-5.4 12-12 12zM12 192h424c6.6 0 12 5.4 12 12v260c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V204c0-6.6 5.4-12 12-12zm116 204c0-6.6-5.4-12-12-12H76c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12H76c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm128 128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm128 128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40z">
-                            </path>
-                        </svg>
-                        Updated:</strong> <time id="dateofupdate">No update date</time>
-                        <p class="page__date"><strong><svg class="svg-inline--fa fa-calendar-alt fa-w-14 fa-fw"
-                            aria-hidden="true" data-prefix="fas" data-icon="calendar-alt" role="img"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
-                            <path fill="currentColor"
-                                d="M436 160H12c-6.6 0-12-5.4-12-12v-36c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48v36c0 6.6-5.4 12-12 12zM12 192h424c6.6 0 12 5.4 12 12v260c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V204c0-6.6 5.4-12 12-12zm116 204c0-6.6-5.4-12-12-12H76c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12H76c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm128 128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm128 128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40z">
-                            </path>
-                        </svg>
-                        Created:</strong> <time id="dateofcreate">No create date</time>
-                        <p><a href="#" id="mailbutton" class="btn btn-primary">Apply</a></p>
-
+                                    aria-hidden="true" data-prefix="fas" data-icon="calendar-alt" role="img"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
+                                    <path fill="currentColor"
+                                        d="M436 160H12c-6.6 0-12-5.4-12-12v-36c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48v36c0 6.6-5.4 12-12 12zM12 192h424c6.6 0 12 5.4 12 12v260c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V204c0-6.6 5.4-12 12-12zm116 204c0-6.6-5.4-12-12-12H76c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12H76c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm128 128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm128 128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40zm0-128c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-40z">
+                                    </path>
+                                </svg>
+                                Created:</strong> <time id="dateofcreate">No create date</time>
+                            <p><a href="#" id="mailbutton" class="btn btn-primary"  style="display: block; margin-left: auto; margin-right: auto;">Apply</a></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

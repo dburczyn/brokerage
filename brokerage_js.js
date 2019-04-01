@@ -1,7 +1,7 @@
-var authorizationtoken = "b15219993204d4d121a0d6d586432ba8137f817f"; //store it securely, not in plaintext here !!
-var repourl = "https://api.github.com/repositories/175385549/contents/js"; // has to be exact, because link with username and repo name redirect, which is not handles properly by firefox and edge (chrome works ok)
 templatejson = {
-  "title": "templatetitle"
+  "picture": "templatepicture",
+  "email": "templateemail",
+  "description": "templatedescription",
 };
 var locale = "en-GB";
 var options = {
@@ -32,6 +32,20 @@ function readCookie(name) {
   }
   return null;
 }
+// $(function () {
+//   repourl = parent.document.getElementById("brokerrepourl").value;
+//   $('#createbutton').hide();
+//   $('#eventdelete').hide();
+//   $('#eventedit').hide();
+//   authorizationelement = parent.document.getElementById("brokerageauth");
+//   if (authorizationelement != null) {
+//     authorizationtoken = parent.document.getElementById("brokerageauth").value;
+//     $('#createbutton').show();
+//     $('#eventdelete').show();
+//     $('#eventedit').show();
+//   }
+// });
+
 $(function () {
   $('#getevents').on('click', function (e) {
     e.preventDefault();
@@ -39,7 +53,9 @@ $(function () {
     $.ajax({
       url: repourl,
       beforeSend: function (request) {
-        request.setRequestHeader("Authorization", "token " + authorizationtoken);
+        if (typeof authorizationtoken !== 'undefined') {
+          request.setRequestHeader("Authorization", "token " + authorizationtoken);
+        }
       },
       dataType: 'json',
       success: function (results) {
@@ -55,72 +71,55 @@ $(function () {
           });
         });
         if (document.getElementById('nameasc').checked) {
-          alert("nameasc");
           resultsJSON.sort(function (a, b) {
             return ('' + a.name).localeCompare(b.name);
           });
         } else if (document.getElementById('namedesc').checked) {
-          alert("namedesc");
           resultsJSON.sort(function (a, b) {
             return -('' + a.name).localeCompare(b.name);
           });
         } else if (document.getElementById('createdasc').checked) {
-          alert("createdasc");
           resultsJSON.sort(function (a, b) {
             return ('' + a.createdat).localeCompare(b.createdat);
           });
         } else if (document.getElementById('createddesc').checked) {
-          alert("createddesc");
           resultsJSON.sort(function (a, b) {
             return -('' + a.createdat).localeCompare(b.createdat);
           });
         } else if (document.getElementById('updtedasc').checked) {
-          alert("updtedasc");
           resultsJSON.sort(function (a, b) {
             return ('' + a.updatedat).localeCompare(b.updatedat);
           });
         } else if (document.getElementById('updteddesc').checked) {
-          alert("updteddesc");
           resultsJSON.sort(function (a, b) {
             return -('' + a.updatedat).localeCompare(b.updatedat);
           });
         }
 
         function isJob(value) {
-          if (value.type === "job"){
-          alert("job");
-          return value;}
+          if (value.type === "job") {
+            return value;
+          }
         }
 
         function isEvent(value) {
-          if (value.type === "event"){
-          alert("event");
-          return value;}
+          if (value.type === "event") {
+            return value;
+          }
         }
 
         function isTraining(value) {
-          if (value.type === "training"){
-          alert("training");
-          return value;}
-
+          if (value.type === "training") {
+            return value;
+          }
         }
-
-
-
         if (document.getElementById('showjobs').checked) {
-          alert("showjobs");
-          resultsJSON=resultsJSON.filter(isJob);
+          resultsJSON = resultsJSON.filter(isJob);
         } else if (document.getElementById('showevents').checked) {
-          alert("showevents");
-          resultsJSON= resultsJSON.filter(isEvent);
-        }else if (document.getElementById('showtrainings').checked) {
-          alert("showtrainings");
-          resultsJSON=resultsJSON.filter(isTraining);
+          resultsJSON = resultsJSON.filter(isEvent);
+        } else if (document.getElementById('showtrainings').checked) {
+          resultsJSON = resultsJSON.filter(isTraining);
         }
-
-
-
-
         resultsJSON.forEach(function (entry) {
           var name = entry.updatedat + "_" + entry.createdat + "_" + entry.datetype + "_" + entry.name + "_" + entry.type;
           var parsedcreatedat = new Date(parseInt(entry.createdat)).toLocaleDateString(locale, options);
@@ -144,7 +143,13 @@ $(function () {
           var list = '<div class="col-md-3 cms-boxes-outer">                <div class="cms-boxes-items cms-features" style="background-color:' + bgcolor + '">                  <div class="boxes-align" data-toggle="modal" data-target="#expandedTile" id="' + name + '">                    <div class="small-box">             <br>         ' + icon + '                       <h3>' + entry.name + '</h3><h3>' + handle + entry.datetype + '</h3><h3>Last update: ' + parsedupdatedat + '</h3><h3> Created: ' + parsedcreatedat + '</h3>                    </div>                  </div>                </div>              </div>  ';
           $(list).appendTo("#foo");
         });
-      },
+      }
+    }).fail(function (request) {
+      if (request.getResponseHeader('X-RateLimit-Remaining') == 0) {
+        var resetmilis = request.getResponseHeader('X-RateLimit-Reset');
+        var resetdate = new Date(resetmilis * 1000);
+        alert("You have exceeded your limit of api calls, your limit will be refreshed: " + resetdate);
+      }
     });
   });
   $('.container-fluid').on('click', '.boxes-align', function (e) {
@@ -152,7 +157,9 @@ $(function () {
     $.ajax({
         url: repourl + '/' + $(this).attr('id'),
         beforeSend: function (request) {
-          request.setRequestHeader("Authorization", "token " + authorizationtoken);
+          if (typeof authorizationtoken !== 'undefined') {
+            request.setRequestHeader("Authorization", "token " + authorizationtoken);
+          }
         },
         dataType: 'json',
         success: function (response) {
@@ -204,12 +211,13 @@ $(function () {
     $.ajax({
       url: repourl + '/' + $('#createdat').val() + '_' + $('#createdat').val() + '_' + handler + '_' + $('#filename').val() + '_' + type,
       beforeSend: function (request) {
-        request.setRequestHeader("Authorization", "token " + authorizationtoken);
+        if (typeof authorizationtoken !== 'undefined') {
+          request.setRequestHeader("Authorization", "token " + authorizationtoken);
+        }
       },
       type: 'PUT',
       data: '{"message": "create file","content":"' + btoa(JSON.stringify(content)) + '" }',
       success: function (data) {
-        alert('File create was performed. Passed data: ' + JSON.stringify(data));
         $('#createform').modal('hide');
       }
     });
@@ -225,12 +233,13 @@ $(function () {
     $.ajax({
       url: repourl + '/' + currentresponse.name,
       beforeSend: function (request) {
-        request.setRequestHeader("Authorization", "token " + authorizationtoken);
+        if (typeof authorizationtoken !== 'undefined') {
+          request.setRequestHeader("Authorization", "token " + authorizationtoken);
+        }
       },
       type: 'DELETE',
       data: '{"message": "delete file","sha":"' + currentresponse.sha + '" }',
       success: function (data) {
-        alert('Delete was performed. Passed data: ' + JSON.stringify(data));
         $('#expandedTile').modal('hide');
       }
     });
@@ -252,7 +261,6 @@ $(function () {
       if (currentresponse.name.split("_")[4] === typesradionew[i].value) {
         typesradionew[i].checked = true;
         jobtypeedited = typesradionew[i].value;
-        console.log(jobtypeedited);
         break;
       }
     }
@@ -272,12 +280,9 @@ $(function () {
     if (jobtypeedited === 'event' || jobtypeedited === 'training') {
       document.getElementById("eventdateedited").value = currentresponse.name.split("_")[2];
     } else if (jobtypeedited === 'job') {
-      console.log("pajszlo");
       var typeseditedradionew = document.getElementsByName('jobtypeedited');
       for (var j = 0, l = typeseditedradionew.length; j < l; j++) {
-        console.log(currentresponse.name.split("_")[2]);
-        console.log(typeseditedradionew[j].value);
-        if (currentresponse.name.split("_")[2] === typeseditedradionew[j].value) {
+          if (currentresponse.name.split("_")[2] === typeseditedradionew[j].value) {
           typeseditedradionew[j].checked = true;
           break;
         }
@@ -335,21 +340,23 @@ $(function () {
     $.ajax({
       url: repourl + '/' + $('#updatedatedited').val() + '_' + currentresponse.name.split("_")[1] + '_' + handler + '_' + $('#filenameedited').val() + '_' + typeedited,
       beforeSend: function (request) {
-        request.setRequestHeader("Authorization", "token " + authorizationtoken);
+        if (typeof authorizationtoken !== 'undefined') {
+          request.setRequestHeader("Authorization", "token " + authorizationtoken);
+        }
       },
       type: 'PUT',
       data: dataforcreate,
     }).done(function (data) {
-      alert('File edit was performed. Passed data: ' + JSON.stringify(data));
       $.ajax({
         url: repourl + '/' + currentresponse.name,
         beforeSend: function (request) {
-          request.setRequestHeader("Authorization", "token " + authorizationtoken);
+          if (typeof authorizationtoken !== 'undefined') {
+            request.setRequestHeader("Authorization", "token " + authorizationtoken);
+          }
         },
         type: 'DELETE',
         data: datafordelete,
       }).done(function (data) {
-        alert('Delete of preedited file was performed. Passed data: ' + JSON.stringify(data));
         $('#editform').modal('hide');
       });
     });
@@ -396,15 +403,3 @@ $(function () {
     });
   });
 });
-// $(function () {
-//   isAdmin = parent.document.getElementsByClassName("bootstrapred");
-//      if (isAdmin.length===0) {
-//     $('#createbutton').hide();
-//     $('#eventdelete').hide();
-//     $('#eventedit').hide();
-//   } else {
-//     $('#createbutton').show();
-//     $('#eventdelete').show();
-//     $('#eventedit').show();
-//   }
-// });

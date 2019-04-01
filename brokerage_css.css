@@ -273,22 +273,22 @@ svg:not(:root).svg-inline--fa {
 }
 @-webkit-keyframes fa-spin {
   0% {
-      -webkit-transform: rotate(0);
-      transform: rotate(0)
+    -webkit-transform: rotate(0);
+    transform: rotate(0)
   }
   100% {
-      -webkit-transform: rotate(360deg);
-      transform: rotate(360deg)
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg)
   }
 }
 @keyframes fa-spin {
   0% {
-      -webkit-transform: rotate(0);
-      transform: rotate(0)
+    -webkit-transform: rotate(0);
+    transform: rotate(0)
   }
   100% {
-      -webkit-transform: rotate(360deg);
-      transform: rotate(360deg)
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg)
   }
 }
 .fa-rotate-90 {
@@ -644,22 +644,22 @@ svg:not(:root).svg-inline--fa {
 }
 @-webkit-keyframes fa-spin {
   0% {
-      -webkit-transform: rotate(0);
-      transform: rotate(0)
+    -webkit-transform: rotate(0);
+    transform: rotate(0)
   }
   100% {
-      -webkit-transform: rotate(360deg);
-      transform: rotate(360deg)
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg)
   }
 }
 @keyframes fa-spin {
   0% {
-      -webkit-transform: rotate(0);
-      transform: rotate(0)
+    -webkit-transform: rotate(0);
+    transform: rotate(0)
   }
   100% {
-      -webkit-transform: rotate(360deg);
-      transform: rotate(360deg)
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg)
   }
 }
 .fa-rotate-90 {
@@ -745,22 +745,27 @@ section.cms-boxes .cms-boxes-outer {
   margin-bottom: 6px;
   padding: 0 3px;
 }
+
 section.cms-boxes .cms-boxes-outer .cms-boxes-items {
   height: 200px;
   display: table;
   width: 100%;
 }
+
 section.cms-boxes .cms-boxes-outer .cms-boxes-items p {
   color: #fff;
 }
+
 section.cms-boxes .cms-features {
   background-color: #b70457;
 }
+
 section.cms-boxes .boxes-align {
   display: table-cell;
   vertical-align: middle;
   word-wrap: break-word;
 }
+
 section.cms-boxes .small-box,
 section.cms-boxes .large-box {
   max-width: 220px;
@@ -770,6 +775,7 @@ section.cms-boxes .large-box {
   margin: 0 auto;
   text-align: center;
 }
+
 section.cms-boxes .cms-boxes-items h2 {
   font-size: 35px;
   color: #fff;
@@ -779,37 +785,48 @@ section.cms-boxes .cms-boxes-items h2 {
   margin: 20px 0 10px;
   text-transform: uppercase;
 }
+
 section.cms-boxes .cms-security {
   background-color: #0489b7;
 }
+
 section.cms-boxes .cms-security,
 section.cms-boxes .cms-documentation {
   background-color: rgb(66, 16, 88);
 }
+
 section.cms-boxes .cms-scalability {
   background: url(https://www.solodev.com/assets/tiles/scalability.jpg) 0 0 no-repeat;
   background-size: cover;
 }
+
 section.cms-boxes .cms-built {
   background: url(https://www.solodev.com/assets/tiles/customer-service.jpg) 0 0 no-repeat;
   background-size: cover;
 }
-section.cms-boxes .cms-security, section.cms-boxes .cms-documentation {
+
+section.cms-boxes .cms-security,
+section.cms-boxes .cms-documentation {
   background-color: rgb(66, 16, 88);
 }
+
 section.cms-boxes .cms-boxes-items:hover {
   opacity: .2;
   cursor: pointer;
 }
 #modd {
-    overflow:auto;
+  max-height: calc(100vh - 195px);
+  overflow-y: auto;
 }
 .modal-dialog {
-    width: 90%;
-    margin: 30px auto;
+  width: 80%;
+  margin: 0 auto;
 }
 
 img{
-  max-width:1600px;
-  max-height:250px;
+  max-width:1200px;
+  max-height:100px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
