@@ -1,3 +1,5 @@
+repourl = "https://api.github.com/repositories/175385549/contents/js";
+authorizationtoken = "fc0c4dab97342a2989433144eaa368ce19633982";
 templatejson = {
   "picture": "templatepicture",
   "email": "templateemail",
@@ -13,7 +15,6 @@ var options = {
   minute: 'numeric',
   second: 'numeric'
 };
-
 function getSafe(fn, defaultVal) {
   try {
     return fn();
@@ -21,17 +22,12 @@ function getSafe(fn, defaultVal) {
     return defaultVal;
   }
 }
+Array.prototype.diff = function(a) {
+  return this.filter(function(i) {return a.indexOf(i) < 0;});
+};
 
-function readCookie(name) {
-  var nameEQ = encodeURIComponent(name) + "=";
-  var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
-  }
-  return null;
-}
+//////////////////////////OLIVE////////////////////////
+
 // $(function () {
 //   repourl = parent.document.getElementById("brokerrepourl").value;
 //   $('#createbutton').hide();
@@ -45,6 +41,10 @@ function readCookie(name) {
 //     $('#eventedit').show();
 //   }
 // });
+
+//////////////////////////OLIVE////////////////////////
+
+
 
 $(function () {
   $('#getevents').on('click', function (e) {
@@ -61,6 +61,7 @@ $(function () {
       success: function (results) {
         resultsJSON = [];
         $.each(results, function (i, f) {
+          if(f.name!=='indexlist'){
           var splitname = f.name.split("_");
           resultsJSON.push({
             updatedat: splitname[0],
@@ -69,6 +70,7 @@ $(function () {
             name: splitname[3],
             type: splitname[4]
           });
+        }
         });
         if (document.getElementById('nameasc').checked) {
           resultsJSON.sort(function (a, b) {
@@ -95,19 +97,16 @@ $(function () {
             return -('' + a.updatedat).localeCompare(b.updatedat);
           });
         }
-
         function isJob(value) {
           if (value.type === "job") {
             return value;
           }
         }
-
         function isEvent(value) {
           if (value.type === "event") {
             return value;
           }
         }
-
         function isTraining(value) {
           if (value.type === "training") {
             return value;
@@ -140,7 +139,7 @@ $(function () {
             icon = '<i class="fas fa-chalkboard-teacher fa-3x">&nbsp;</i>';
             handle = "Date: ";
           }
-          var list = '<div class="col-md-3 cms-boxes-outer">                <div class="cms-boxes-items cms-features" style="background-color:' + bgcolor + '">                  <div class="boxes-align" data-toggle="modal" data-target="#expandedTile" id="' + name + '">                    <div class="small-box">             <br>         ' + icon + '                       <h3>' + entry.name + '</h3><h3>' + handle + entry.datetype + '</h3><h3>Last update: ' + parsedupdatedat + '</h3><h3> Created: ' + parsedcreatedat + '</h3>                    </div>                  </div>                </div>              </div>  ';
+          var list = '<div class="col-md-3 cms-boxes-outer">                <div class="cms-boxes-items cms-features" style="background-color:' + bgcolor + '">                  <div class="boxes-align" data-toggle="modal" data-target="#expandedTile" id="' + name + '">                    <div class="small-box">             <br>         ' + icon + '                       <h3>' + entry.name + '</h3><h4>' + handle + entry.datetype + '</h4><h5>Last update: ' + parsedupdatedat + '</h5><h5> Created: ' + parsedcreatedat + '</h5>                    </div>                  </div>                </div>              </div>  ';
           $(list).appendTo("#foo");
         });
       }
@@ -274,7 +273,7 @@ $(function () {
       $(inp).appendTo("#extraeditformfields");
     } else if (jobtypeedited === 'job') {
       $("#extraeditformfields").empty();
-      inp = '    <p>Job type: </p><p><input type="radio" name="jobtypeedited" value="Employment" checked> Employment   <input type="radio" name="jobtypeedited" value="Training"> Training<br>    <input type="radio" name="jobtypeedited" value="Internship"> Internship<br><input type="radio" name="jobtypeedited" value="Master"> Master<br><input type="radio" name="jobtypeedited" value="PhD"> PhD<br> </p>';
+      inp = '    <p>Job type: </p><p><input type="radio" name="jobtypeedited" value="Employment" checked> Employment<br>   <input type="radio" name="jobtypeedited" value="Training"> Training<br>    <input type="radio" name="jobtypeedited" value="Internship"> Internship<br><input type="radio" name="jobtypeedited" value="Master"> Master<br><input type="radio" name="jobtypeedited" value="PhD"> PhD<br> </p>';
       $(inp).appendTo("#extraeditformfields");
     }
     if (jobtypeedited === 'event' || jobtypeedited === 'training') {
@@ -380,7 +379,7 @@ $(function () {
       $(inp).appendTo("#extraformfields");
     } else if (e.target.value === 'job') {
       $("#extraformfields").empty();
-      inp = '    <p>Job type: </p><p><input type="radio" name="jobtype" value="Employment" checked> Employment   <input type="radio" name="jobtype" value="Training"> Training<br>    <input type="radio" name="jobtype" value="Internship"> Internship<br><input type="radio" name="jobtype" value="Master"> Master<br><input type="radio" name="jobtype" value="PhD"> PhD<br> </p>';
+      inp = '    <p>Job type: </p><p><input type="radio" name="jobtype" value="Employment" checked> Employment<br>   <input type="radio" name="jobtype" value="Training"> Training<br>    <input type="radio" name="jobtype" value="Internship"> Internship<br><input type="radio" name="jobtype" value="Master"> Master<br><input type="radio" name="jobtype" value="PhD"> PhD<br> </p>';
       $(inp).appendTo("#extraformfields");
     }
   });
@@ -397,9 +396,115 @@ $(function () {
         $(inp).appendTo("#extraeditformfields");
       } else if (e.target.value === 'job') {
         $("#extraeditformfields").empty();
-        inp = '    <p>Job type: </p><p><input type="radio" name="jobtypeedited" value="Employment" checked> Employment   <input type="radio" name="jobtypeedited" value="Training"> Training<br>    <input type="radio" name="jobtypeedited" value="Internship"> Internship<br><input type="radio" name="jobtypeedited" value="Master"> Master<br><input type="radio" name="jobtypeedited" value="PhD"> PhD<br> </p>';
+        inp = '    <p>Job type: </p><p><input type="radio" name="jobtypeedited" value="Employment" checked> Employment <br>  <input type="radio" name="jobtypeedited" value="Training"> Training<br>    <input type="radio" name="jobtypeedited" value="Internship"> Internship<br><input type="radio" name="jobtypeedited" value="Master"> Master<br><input type="radio" name="jobtypeedited" value="PhD"> PhD<br> </p>';
         $(inp).appendTo("#extraeditformfields");
       }
     });
   });
+});
+
+
+
+
+
+// declare globals
+names = [];
+indexedListNames = [];
+indexListobjToUpdate = {};
+indexListobjToUpdate['list'] = [];
+// get list of names
+function getListOfObjects() {
+  $.ajax({
+    url: repourl,
+    beforeSend: function (request) {
+      if (typeof authorizationtoken !== 'undefined') {
+        request.setRequestHeader("Authorization", "token " + authorizationtoken);
+      }
+    },
+    dataType: 'json',
+    success: function (results) {
+      $.each(results, function (i, f) {
+        names.push(
+          f.name
+        );
+      });
+      getIndexList(); // after having list of all names in repo, get list of indexed names
+    }
+  });
+}
+// get list
+function getIndexList() {
+  $.ajax({
+    url: repourl + '/indexlist',
+    beforeSend: function (request) {
+      if (typeof authorizationtoken !== 'undefined') {
+        request.setRequestHeader("Authorization", "token " + authorizationtoken);
+      }
+    },
+    dataType: 'json',
+    success: function (response) {
+        currentresponse = response;
+        listsha=response.sha;
+                     content = atob(response.content);
+                    unencodedcontentlist = getSafe(() => JSON.parse(content), "xxx");
+indexedlistarray = unencodedcontentlist['list'];
+indexedlistarray.forEach(function (entry, i) {
+        indexedListNames.push(
+           entry.name
+        );
+      });
+      getDiffIndexList();
+    }
+  });
+}
+// if no name on indexlist add object to indexlist
+function getDiffIndexList() {
+namesToAddToList = names.diff(indexedListNames);
+var promises = [];
+namesToAddToList.forEach(function (entry, f) {
+  var request=   $.ajax({
+          url: repourl + '/' + entry,
+          beforeSend: function (request) {
+            if (typeof authorizationtoken !== 'undefined') {
+              request.setRequestHeader("Authorization", "token " + authorizationtoken);
+            }
+          },
+          dataType: 'json',
+          success: function (response) {
+            currentresponse = response;
+            content = atob(response.content);
+            unencodedcontent = getSafe(() => JSON.parse(content), "xxx");
+            indexListobjToUpdate['list'].push({
+              description: unencodedcontent.description,
+              email: unencodedcontent.email,
+              picture: unencodedcontent.picture,
+              name: entry
+            });
+          }
+        });
+        promises.push( request);
+        });
+        $.when.apply(null, promises).done(function(){
+          performUpdate();
+       })
+}
+function performUpdate() {
+  result = {}
+  result['list']=unencodedcontentlist.list.concat(indexListobjToUpdate.list);
+  $.ajax({
+    url: repourl + '/indexlist',
+    beforeSend: function (request) {
+      if (typeof authorizationtoken !== 'undefined') {
+        request.setRequestHeader("Authorization", "token " + authorizationtoken);
+      }
+    },
+    type: 'PUT',
+    data: '{"message": "create indexlist","sha":"' + listsha + '","content":"' + btoa(JSON.stringify(result)) + '" }',
+    dataType: 'json',
+    success: function (response) {
+    }
+  });
+}
+$(function () {
+  getListOfObjects();
 });
