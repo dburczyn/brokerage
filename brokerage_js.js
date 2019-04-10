@@ -1,10 +1,7 @@
+// provided by Olive, just here for testing
 repourl = "https://api.github.com/repositories/175385549/contents/js";
-authorizationtoken = "fc0c4dab97342a2989433144eaa368ce19633982";
-templatejson = {
-  "picture": "templatepicture",
-  "email": "templateemail",
-  "description": "templatedescription",
-};
+authorizationtoken = "";
+// config  for date parser
 var locale = "en-GB";
 var options = {
   weekday: 'long',
@@ -15,19 +12,14 @@ var options = {
   minute: 'numeric',
   second: 'numeric'
 };
-function getSafe(fn, defaultVal) {
-  try {
-    return fn();
-  } catch (e) {
-    return defaultVal;
-  }
-}
-Array.prototype.diff = function(a) {
-  return this.filter(function(i) {return a.indexOf(i) < 0;});
+
+// array diff function declaration to create rich list of files
+Array.prototype.diff = function (a) {
+  return this.filter(function (i) {
+    return a.indexOf(i) < 0;
+  });
 };
-
-//////////////////////////OLIVE////////////////////////
-
+// Olive Admin control - get repo url and authentication token if you are admin
 // $(function () {
 //   repourl = parent.document.getElementById("brokerrepourl").value;
 //   $('#createbutton').hide();
@@ -42,35 +34,35 @@ Array.prototype.diff = function(a) {
 //   }
 // });
 
-//////////////////////////OLIVE////////////////////////
-
-
+indexlistendpoint = 'indexlist';
 
 $(function () {
   $('#getevents').on('click', function (e) {
-    e.preventDefault();
+// clear widget llist container
     $("#foo").empty();
+// call endpoint returning "rich list of widged instances" - with all data needed to produce tiles in grid widget view
     $.ajax({
-      url: repourl,
+      url: repourl + '/' +indexlistendpoint,
       beforeSend: function (request) {
         if (typeof authorizationtoken !== 'undefined') {
           request.setRequestHeader("Authorization", "token " + authorizationtoken);
         }
       },
       dataType: 'json',
-      success: function (results) {
+      success: function (response) {
+        // produce array with info needed to produce tile for each idet instance
         resultsJSON = [];
-        $.each(results, function (i, f) {
-          if(f.name!=='indexlist'){
-          var splitname = f.name.split("_");
-          resultsJSON.push({
-            updatedat: splitname[0],
-            createdat: splitname[1],
-            datetype: splitname[2],
-            name: splitname[3],
-            type: splitname[4]
-          });
-        }
+        unencodedcontent = JSON.parse(atob(response.content));
+        $.each(unencodedcontent.list, function (i,f) {
+          if (f.name !== indexlistendpoint) {   // omit indexlist file - it is in the same repo folder
+            resultsJSON.push({
+              updatedat: f.updatedat,
+              createdat: f.createdat,
+              datetype: f.datetype,
+              name: f.name,
+              type: f.type
+            });
+          }
         });
         if (document.getElementById('nameasc').checked) {
           resultsJSON.sort(function (a, b) {
@@ -120,7 +112,6 @@ $(function () {
           resultsJSON = resultsJSON.filter(isTraining);
         }
         resultsJSON.forEach(function (entry) {
-          var name = entry.updatedat + "_" + entry.createdat + "_" + entry.datetype + "_" + entry.name + "_" + entry.type;
           var parsedcreatedat = new Date(parseInt(entry.createdat)).toLocaleDateString(locale, options);
           var parsedupdatedat = new Date(parseInt(entry.updatedat)).toLocaleDateString(locale, options);
           var bgcolor = "";
@@ -139,7 +130,7 @@ $(function () {
             icon = '<i class="fas fa-chalkboard-teacher fa-3x">&nbsp;</i>';
             handle = "Date: ";
           }
-          var list = '<div class="col-md-3 cms-boxes-outer">                <div class="cms-boxes-items cms-features" style="background-color:' + bgcolor + '">                  <div class="boxes-align" data-toggle="modal" data-target="#expandedTile" id="' + name + '">                    <div class="small-box">             <br>         ' + icon + '                       <h3>' + entry.name + '</h3><h4>' + handle + entry.datetype + '</h4><h5>Last update: ' + parsedupdatedat + '</h5><h5> Created: ' + parsedcreatedat + '</h5>                    </div>                  </div>                </div>              </div>  ';
+          var list = '<div class="col-md-3 cms-boxes-outer">                <div class="cms-boxes-items cms-features" style="background-color:' + bgcolor + '">                  <div class="boxes-align" data-toggle="modal" data-target="#expandedTile" id="' + entry.updatedat + '">                    <div class="small-box">             <br>         ' + icon + '                       <h3>' + entry.name + '</h3><h4>' + handle + entry.datetype + '</h4><h5>Last update: ' + parsedupdatedat + '</h5><h5> Created: ' + parsedcreatedat + '</h5>                    </div>                  </div>                </div>              </div>  ';
           $(list).appendTo("#foo");
         });
       }
@@ -150,7 +141,7 @@ $(function () {
         alert("You have exceeded your limit of api calls, your limit will be refreshed: " + resetdate);
       }
     });
-  });
+
   $('.container-fluid').on('click', '.boxes-align', function (e) {
     e.stopPropagation();
     $.ajax({
@@ -164,11 +155,11 @@ $(function () {
         success: function (response) {
           currentresponse = response;
           content = atob(response.content);
-          unencodedcontent = getSafe(() => JSON.parse(content), templatejson);
-          document.getElementById('modal-title').innerHTML = response.name.split("_")[3];
-          document.getElementById('datetype').innerHTML = response.name.split("_")[2];
-          document.getElementById('dateofcreate').innerHTML = new Date(parseInt(response.name.split("_")[1])).toLocaleDateString(locale, options);
-          document.getElementById('dateofupdate').innerHTML = new Date(parseInt(response.name.split("_")[0])).toLocaleDateString(locale, options);
+          unencodedcontent = JSON.parse(content);
+          document.getElementById('modal-title').innerHTML = unencodedcontent.name;
+          document.getElementById('datetype').innerHTML = unencodedcontent.datetype;
+          document.getElementById('dateofcreate').innerHTML = new Date(parseInt(unencodedcontent.createdat)).toLocaleDateString(locale, options);
+          document.getElementById('dateofupdate').innerHTML = new Date(parseInt(unencodedcontent.updatedat)).toLocaleDateString(locale, options);
           document.getElementById('currentPhoto').src = unencodedcontent.picture;
           document.getElementById('mailbutton').href = 'mailto:' + unencodedcontent.email;
           document.getElementById('description').innerHTML = unencodedcontent.description;
@@ -180,13 +171,21 @@ $(function () {
       });
   });
 });
+});
+
+$(function () {
+
+  $("#getevents").trigger("click");
+});
+
+
+
+
+
+
 $(function () {
   $('#event_create_form').on('submit', function (e) {
     e.preventDefault();
-    var content = {};
-    content.description = $('#filecontent').val();
-    content.picture = $('#eventpicture').val();
-    content.email = $('#emailaddress').val();
     var typesradio = document.getElementsByName('type');
     var type;
     for (var i = 0, length = typesradio.length; i < length; i++) {
@@ -207,8 +206,17 @@ $(function () {
         }
       }
     }
+    var content = {};
+    content.description = $('#filecontent').val();
+    content.picture = $('#eventpicture').val();
+    content.email = $('#emailaddress').val();
+    content.updatedat = $('#createdat').val();
+    content.createdat = $('#createdat').val();
+    content.datetype = handler;
+    content.type = type;
+    content.name = $('#filename').val();
     $.ajax({
-      url: repourl + '/' + $('#createdat').val() + '_' + $('#createdat').val() + '_' + handler + '_' + $('#filename').val() + '_' + type,
+      url: repourl + '/' + $('#createdat').val(),
       beforeSend: function (request) {
         if (typeof authorizationtoken !== 'undefined') {
           request.setRequestHeader("Authorization", "token " + authorizationtoken);
@@ -249,15 +257,15 @@ $(function () {
     updatedat = new Date().getTime();
     e.preventDefault();
     document.getElementById("updatedatedited").value = updatedat;
-    document.getElementById("createdatedited").value = currentresponse.name.split("_")[1];
-    document.getElementById("filenameedited").value = currentresponse.name.split("_")[3];
+    document.getElementById("createdatedited").value = unencodedcontent.createdat;
+    document.getElementById("filenameedited").value = unencodedcontent.name;
     document.getElementById("filecontentedited").value = unencodedcontent.description;
     document.getElementById("emailaddressedited").value = unencodedcontent.email;
     document.getElementById("eventpictureedited").value = unencodedcontent.picture;
     var typesradionew = document.getElementsByName('typeedited');
     var jobtypeedited;
     for (var i = 0, length = typesradionew.length; i < length; i++) {
-      if (currentresponse.name.split("_")[4] === typesradionew[i].value) {
+      if (unencodedcontent.type === typesradionew[i].value) {
         typesradionew[i].checked = true;
         jobtypeedited = typesradionew[i].value;
         break;
@@ -277,11 +285,11 @@ $(function () {
       $(inp).appendTo("#extraeditformfields");
     }
     if (jobtypeedited === 'event' || jobtypeedited === 'training') {
-      document.getElementById("eventdateedited").value = currentresponse.name.split("_")[2];
+      document.getElementById("eventdateedited").value = unencodedcontent.datetype;
     } else if (jobtypeedited === 'job') {
       var typeseditedradionew = document.getElementsByName('jobtypeedited');
       for (var j = 0, l = typeseditedradionew.length; j < l; j++) {
-          if (currentresponse.name.split("_")[2] === typeseditedradionew[j].value) {
+        if (unencodedcontent.datetype === typeseditedradionew[j].value) {
           typeseditedradionew[j].checked = true;
           break;
         }
@@ -310,12 +318,6 @@ $(function () {
 $(function () {
   $('#file_edit_form').on('submit', function (e) {
     e.preventDefault();
-    var contentedited = {};
-    contentedited.description = $('#filecontentedited').val();
-    contentedited.picture = $('#eventpictureedited').val();
-    contentedited.email = $('#emailaddressedited').val();
-    var dataforcreate = '{"message": "edit file","content":"' + btoa(JSON.stringify(contentedited)) + '" }';
-    var datafordelete = '{"message": "delete file","sha":"' + currentresponse.sha + '" }';
     var typesradioedited = document.getElementsByName('typeedited');
     var typeedited;
     for (var i = 0, length = typesradioedited.length; i < length; i++) {
@@ -336,8 +338,18 @@ $(function () {
         }
       }
     }
+    var contentedited = {};
+    contentedited.description = $('#filecontentedited').val();
+    contentedited.picture = $('#eventpictureedited').val();
+    contentedited.email = $('#emailaddressedited').val();
+    contentedited.updatedat = $('#updatedatedited').val();
+    contentedited.createdat = $('#createdatedited').val();
+    contentedited.datetype = handler;
+    contentedited.type = typeedited;
+    contentedited.name = $('#filenameedited').val();
+    var dataforcreate = '{"message": "edit file","content":"' + btoa(JSON.stringify(contentedited)) + '","sha":"' + currentresponse.sha + '"  }';
     $.ajax({
-      url: repourl + '/' + $('#updatedatedited').val() + '_' + currentresponse.name.split("_")[1] + '_' + handler + '_' + $('#filenameedited').val() + '_' + typeedited,
+      url: repourl + '/' + $('#updatedatedited').val(),
       beforeSend: function (request) {
         if (typeof authorizationtoken !== 'undefined') {
           request.setRequestHeader("Authorization", "token " + authorizationtoken);
@@ -354,18 +366,16 @@ $(function () {
           }
         },
         type: 'DELETE',
-        data: datafordelete,
-      }).done(function (data) {
-        $('#editform').modal('hide');
+        data: '{"message": "delete file","sha":"' + currentresponse.sha + '" }',
+        success: function (data) {
+          $('#expandedTile').modal('hide');
+        }
       });
+      $('#editform').modal('hide');
     });
   });
 });
-$(function () {
-  $(document).ready(function () {
-    $("#getevents").trigger("click");
-  });
-});
+
 $(function () {
   var inp;
   $('input[name="type"]').click(function (e) {
@@ -402,16 +412,11 @@ $(function () {
     });
   });
 });
-
-
-
-
-
 // declare globals
 names = [];
 indexedListNames = [];
 indexListobjToUpdate = {};
-indexListobjToUpdate['list'] = [];
+indexListobjToUpdate.list = [];
 // get list of names
 function getListOfObjects() {
   $.ajax({
@@ -424,9 +429,11 @@ function getListOfObjects() {
     dataType: 'json',
     success: function (results) {
       $.each(results, function (i, f) {
-        names.push(
-          f.name
-        );
+        if (f.name != 'indexlist') {
+          names.push(
+            f.name
+          );
+        }
       });
       getIndexList(); // after having list of all names in repo, get list of indexed names
     }
@@ -435,7 +442,7 @@ function getListOfObjects() {
 // get list
 function getIndexList() {
   $.ajax({
-    url: repourl + '/indexlist',
+    url: repourl + '/' + indexlistendpoint,
     beforeSend: function (request) {
       if (typeof authorizationtoken !== 'undefined') {
         request.setRequestHeader("Authorization", "token " + authorizationtoken);
@@ -443,15 +450,17 @@ function getIndexList() {
     },
     dataType: 'json',
     success: function (response) {
-        currentresponse = response;
-        listsha=response.sha;
-                     content = atob(response.content);
-                    unencodedcontentlist = getSafe(() => JSON.parse(content), "xxx");
-indexedlistarray = unencodedcontentlist['list'];
-indexedlistarray.forEach(function (entry, i) {
-        indexedListNames.push(
-           entry.name
-        );
+      currentresponse = response;
+      listsha = response.sha;
+      content = atob(response.content);
+      unencodedcontentlist = JSON.parse(content);
+      indexedlistarray = unencodedcontentlist.list;
+      indexedlistarray.forEach(function (entry, i) {
+        if (typeof entry.updatedat !== 'undefined') {
+          indexedListNames.push(
+            entry.updatedat
+          );
+        }
       });
       getDiffIndexList();
     }
@@ -459,40 +468,49 @@ indexedlistarray.forEach(function (entry, i) {
 }
 // if no name on indexlist add object to indexlist
 function getDiffIndexList() {
-namesToAddToList = names.diff(indexedListNames);
-var promises = [];
-namesToAddToList.forEach(function (entry, f) {
-  var request=   $.ajax({
-          url: repourl + '/' + entry,
-          beforeSend: function (request) {
-            if (typeof authorizationtoken !== 'undefined') {
-              request.setRequestHeader("Authorization", "token " + authorizationtoken);
-            }
-          },
-          dataType: 'json',
-          success: function (response) {
-            currentresponse = response;
-            content = atob(response.content);
-            unencodedcontent = getSafe(() => JSON.parse(content), "xxx");
-            indexListobjToUpdate['list'].push({
-              description: unencodedcontent.description,
-              email: unencodedcontent.email,
-              picture: unencodedcontent.picture,
-              name: entry
-            });
-          }
+  namesToAddToList = names.diff(indexedListNames);
+  var promises = [];
+  namesToAddToList.forEach(function (entry, f) {
+    var request = $.ajax({
+      url: repourl + '/' + entry,
+      beforeSend: function (request) {
+        if (typeof authorizationtoken !== 'undefined') {
+          request.setRequestHeader("Authorization", "token " + authorizationtoken);
+        }
+      },
+      dataType: 'json',
+      success: function (response) {
+        currentresponse = response;
+        content = atob(response.content);
+        unencodedcontent = JSON.parse(content);
+        indexListobjToUpdate.list.push({
+          createdat: unencodedcontent.createdat,
+          updatedat: unencodedcontent.updatedat,
+          datetype: unencodedcontent.datetype,
+          name: unencodedcontent.name,
+          type: unencodedcontent.type
         });
-        promises.push( request);
-        });
-        $.when.apply(null, promises).done(function(){
-          performUpdate();
-       })
+      }
+    });
+    promises.push(request);
+  });
+  $.when.apply(null, promises).done(function () {
+    performUpdate();
+  });
 }
 function performUpdate() {
+  namesToDeleteFromList = indexedListNames.diff(names);
   result = {}
-  result['list']=unencodedcontentlist.list.concat(indexListobjToUpdate.list);
+  result.list = unencodedcontentlist.list.concat(indexListobjToUpdate.list);
+  for (var j = 0; j < namesToDeleteFromList.length; j++) {
+    for (var i = 0; i < result.list.length; i++) {
+      if (result.list[i].updatedat == namesToDeleteFromList[j]) {
+        result.list.splice(i, 1);
+      }
+    }
+  }
   $.ajax({
-    url: repourl + '/indexlist',
+    url: repourl + '/' + indexlistendpoint,
     beforeSend: function (request) {
       if (typeof authorizationtoken !== 'undefined') {
         request.setRequestHeader("Authorization", "token " + authorizationtoken);
@@ -501,8 +519,7 @@ function performUpdate() {
     type: 'PUT',
     data: '{"message": "create indexlist","sha":"' + listsha + '","content":"' + btoa(JSON.stringify(result)) + '" }',
     dataType: 'json',
-    success: function (response) {
-    }
+    success: function (response) {}
   });
 }
 $(function () {
