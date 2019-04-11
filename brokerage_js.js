@@ -42,6 +42,16 @@ names = [];
 indexedListNames = [];
 indexListobjToUpdate = {};
 indexListobjToUpdate.list = [];
+inp = null;
+function arraysEqual(arr1, arr2) {
+  if (arr1.length !== arr2.length)
+    return false;
+  for (var i = arr1.length; i--;) {
+    if (arr1[i] !== arr2[i])
+      return false;
+  }
+  return true;
+}
 $(function () {
   $('#getevents').on('click', function (e) {
     // clear widget llist container
@@ -144,7 +154,9 @@ $(function () {
           // append every tile to main grid container
           $(list).appendTo("#foo");
         });
-        getListOfObjects();
+        if (typeof authorizationtoken !== 'undefined') {
+          getListOfObjects();
+        }
       }
     }).fail(function (request) { // handler for github-related api calls limit error
       if (request.getResponseHeader('X-RateLimit-Remaining') == 0) {
@@ -212,19 +224,30 @@ $(function () {
     content.description = $('#filecontent').val();
     content.picture = $('#eventpicture').val();
     content.email = $('#emailaddress').val();
-    content.updatedat = $('#createdat').val();
+    content.updatedat = $('#updatedat').val();
     content.createdat = $('#createdat').val();
     content.datetype = handler;
     content.type = type;
     content.name = $('#filename').val();
     // create file storing content with api call
     $.ajax({
-      url: repourl + '/' + $('#createdat').val(), // creation date acts as unique id (file name in repo)
+      url: repourl + '/' + $('#updatedat').val(), // update date acts as unique id (file name in repo)
       beforeSend: setAuthHeader,
       type: 'PUT',
       data: '{"message": "create file","content":"' + btoa(JSON.stringify(content)) + '" }',
       success: function (data) {
         $('#createform').modal('hide');
+        if (content.updatedat !== content.createdat) {
+          $.ajax({
+            url: repourl + '/' + currentresponse.name,
+            beforeSend: setAuthHeader,
+            type: 'DELETE',
+            data: '{"message": "delete file","sha":"' + currentresponse.sha + '" }',
+            success: function (data) {
+              alert("old file deleted");
+            }
+          });
+        }
       }
     });
   });
@@ -253,13 +276,13 @@ $(function () {
     // populate form with static fields
     updatedat = new Date().getTime();
     e.preventDefault();
-    document.getElementById("updatedatedited").value = updatedat;
-    document.getElementById("createdatedited").value = unencodedcontent.createdat;
-    document.getElementById("filenameedited").value = unencodedcontent.name;
-    document.getElementById("filecontentedited").value = unencodedcontent.description;
-    document.getElementById("emailaddressedited").value = unencodedcontent.email;
-    document.getElementById("eventpictureedited").value = unencodedcontent.picture;
-    var typesradionew = document.getElementsByName('typeedited');
+    document.getElementById("updatedat").value = updatedat;
+    document.getElementById("createdat").value = unencodedcontent.createdat;
+    document.getElementById("filename").value = unencodedcontent.name;
+    document.getElementById("filecontent").value = unencodedcontent.description;
+    document.getElementById("emailaddress").value = unencodedcontent.email;
+    document.getElementById("eventpicture").value = unencodedcontent.picture;
+    var typesradionew = document.getElementsByName('type');
     var jobtypeedited;
     for (var i = 0, length = typesradionew.length; i < length; i++) {
       if (unencodedcontent.type === typesradionew[i].value) {
@@ -269,24 +292,12 @@ $(function () {
       }
     }
     // create additional input fields dynamically, based on type
-    if (jobtypeedited === 'event') {
-      $("#extraeditformfields").empty();
-      inp = '    <p>Event date: </p><input type="date" id="eventdateedited" name="eventdateedited" required><br>';
-      $(inp).appendTo("#extraeditformfields");
-    } else if (jobtypeedited === 'training') {
-      $("#extraeditformfields").empty();
-      inp = '    <p>Training date: </p><input type="date" id="eventdateedited" name="eventdateedited" required><br>';
-      $(inp).appendTo("#extraeditformfields");
-    } else if (jobtypeedited === 'job') {
-      $("#extraeditformfields").empty();
-      inp = '    <p>Job type: </p><p><input type="radio" name="jobtypeedited" value="Employment" checked> Employment<br>   <input type="radio" name="jobtypeedited" value="Training"> Training<br>    <input type="radio" name="jobtypeedited" value="Internship"> Internship<br><input type="radio" name="jobtypeedited" value="Master"> Master<br><input type="radio" name="jobtypeedited" value="PhD"> PhD<br> </p>';
-      $(inp).appendTo("#extraeditformfields");
-    }
+    createExtraFormFields(jobtypeedited);
     // populate additional input fields, based on type
     if (jobtypeedited === 'event' || jobtypeedited === 'training') {
-      document.getElementById("eventdateedited").value = unencodedcontent.datetype;
+      document.getElementById("eventdate").value = unencodedcontent.datetype;
     } else if (jobtypeedited === 'job') {
-      var typeseditedradionew = document.getElementsByName('jobtypeedited');
+      var typeseditedradionew = document.getElementsByName('jobtype');
       for (var j = 0, l = typeseditedradionew.length; j < l; j++) {
         if (unencodedcontent.datetype === typeseditedradionew[j].value) {
           typeseditedradionew[j].checked = true;
@@ -301,6 +312,7 @@ $(function () {
     e.preventDefault();
     $("#extraformfields").empty();
     document.getElementById("createdat").value = createdat;
+    document.getElementById("updatedat").value = createdat;
     document.getElementById("filename").value = "";
     document.getElementById("filecontent").value = "";
     document.getElementById("emailaddress").value = "";
@@ -312,94 +324,10 @@ $(function () {
       }
     }
   });
-  // handle submission of edit form
-  $('#file_edit_form').on('submit', function (e) {
-    e.preventDefault();
-    // set edited type
-    var typesradioedited = document.getElementsByName('typeedited');
-    var typeedited;
-    for (var i = 0, length = typesradioedited.length; i < length; i++) {
-      if (typesradioedited[i].checked) {
-        typeedited = typesradioedited[i].value;
-        break;
-      }
-    }
-    // set edited jobtype for job, datee for event/training
-    var handler;
-    if (typeedited === 'event' || typeedited === 'training') {
-      handler = $('#eventdateedited').val();
-    } else if (typeedited === 'job') {
-      var jobtypesradio = document.getElementsByName('jobtypeedited');
-      for (var j = 0, l = jobtypesradio.length; i < l; i++) {
-        if (jobtypesradio[i].checked) {
-          handler = jobtypesradio[i].value;
-          break;
-        }
-      }
-    }
-    // create content based on edit form inputs
-    var contentedited = {};
-    contentedited.description = $('#filecontentedited').val();
-    contentedited.picture = $('#eventpictureedited').val();
-    contentedited.email = $('#emailaddressedited').val();
-    contentedited.updatedat = $('#updatedatedited').val();
-    contentedited.createdat = $('#createdatedited').val();
-    contentedited.datetype = handler;
-    contentedited.type = typeedited;
-    contentedited.name = $('#filenameedited').val();
-    //call create endpoint
-    $.ajax({
-      url: repourl + '/' + $('#updatedatedited').val(), // update date becomes new id
-      beforeSend: setAuthHeader,
-      type: 'PUT',
-      data: '{"message": "edit file","content":"' + btoa(JSON.stringify(contentedited)) + '"}',
-    }).done(function (data) {
-      // delete old file after creation of new one
-      $.ajax({
-        url: repourl + '/' + currentresponse.name,
-        beforeSend: setAuthHeader,
-        type: 'DELETE',
-        data: '{"message": "delete file","sha":"' + currentresponse.sha + '" }',
-        success: function (data) {
-          $('#expandedTile').modal('hide');
-        }
-      });
-      // hide modal after operation
-      $('#editform').modal('hide');
-    });
-  });
-  var inp;
-  // create additional input fields, when uset clicked widget type in edit form
-  $('input[name="typeedited"]').click(function (e) {
-    if (e.target.value === 'event') {
-      $("#extraeditformfields").empty();
-      inp = '    <p>Event date: </p><input type="date" id="eventdateedited" name="eventdateedited" required><br>';
-      $(inp).appendTo("#extraeditformfields");
-    } else if (e.target.value === 'training') {
-      $("#extraeditformfields").empty();
-      inp = '    <p>Training date: </p><input type="date" id="eventdateedited" name="eventdateedited" required><br>';
-      $(inp).appendTo("#extraeditformfields");
-    } else if (e.target.value === 'job') {
-      $("#extraeditformfields").empty();
-      inp = '    <p>Job type: </p><p><input type="radio" name="jobtypeedited" value="Employment" checked> Employment <br>  <input type="radio" name="jobtypeedited" value="Training"> Training<br>    <input type="radio" name="jobtypeedited" value="Internship"> Internship<br><input type="radio" name="jobtypeedited" value="Master"> Master<br><input type="radio" name="jobtypeedited" value="PhD"> PhD<br> </p>';
-      $(inp).appendTo("#extraeditformfields");
-    }
-  });
-  // create additional input fields, when uset clicked widget type in create form
+  // create additional input fields, when user clicked widget type in create form
   $('input[name="type"]').click(function (e) {
-    if (e.target.value === 'event') {
-      $("#extraformfields").empty();
-      inp = '    <p>Event date: </p><input type="date" id="eventdate" name="eventdate" required><br>';
-      $(inp).appendTo("#extraformfields");
-    } else if (e.target.value === 'training') {
-      $("#extraformfields").empty();
-      inp = '    <p>Training date: </p><input type="date" id="eventdate" name="eventdate" required><br>';
-      $(inp).appendTo("#extraformfields");
-    } else if (e.target.value === 'job') {
-      $("#extraformfields").empty();
-      inp = '    <p>Job type: </p><p><input type="radio" name="jobtype" value="Employment" checked> Employment<br>   <input type="radio" name="jobtype" value="Training"> Training<br>    <input type="radio" name="jobtype" value="Internship"> Internship<br><input type="radio" name="jobtype" value="Master"> Master<br><input type="radio" name="jobtype" value="PhD"> PhD<br> </p>';
-      $(inp).appendTo("#extraformfields");
-    }
+    var temp = e.target.value;
+    createExtraFormFields(temp);
   });
 });
 // get list of names
@@ -459,11 +387,28 @@ function performUpdate() {
       }
     }
   }
-  $.ajax({
-    url: repourl + '/' + indexlistendpoint,
-    beforeSend: setAuthHeader,
-    type: 'PUT',
-    data: '{"message": "create indexlist","sha":"' + listsha + '","content":"' + btoa(JSON.stringify(result)) + '" }',
-    dataType: 'json',
-  });
+  if (!arraysEqual(unencodedcontent.list, result.list)) {
+    $.ajax({
+      url: repourl + '/' + indexlistendpoint,
+      beforeSend: setAuthHeader,
+      type: 'PUT',
+      data: '{"message": "create indexlist","sha":"' + listsha + '","content":"' + btoa(JSON.stringify(result)) + '" }',
+      dataType: 'json',
+    });
+  }
+}
+function createExtraFormFields(args) {
+  if (args === 'event') {
+    $("#extraformfields").empty();
+    inp = '    <p>Event date: </p><input type="date" id="eventdate" name="eventdate" required><br>';
+    $(inp).appendTo("#extraformfields");
+  } else if (args === 'training') {
+    $("#extraformfields").empty();
+    inp = '    <p>Training date: </p><input type="date" id="eventdate" name="eventdate" required><br>';
+    $(inp).appendTo("#extraformfields");
+  } else if (args === 'job') {
+    $("#extraformfields").empty();
+    inp = '    <p>Job type: </p><p><input type="radio" name="jobtype" value="Employment" checked> Employment<br>   <input type="radio" name="jobtype" value="Training"> Training<br>    <input type="radio" name="jobtype" value="Internship"> Internship<br><input type="radio" name="jobtype" value="Master"> Master<br><input type="radio" name="jobtype" value="PhD"> PhD<br> </p>';
+    $(inp).appendTo("#extraformfields");
+  }
 }

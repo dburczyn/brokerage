@@ -55,43 +55,7 @@
             </div>
         </section>
     </div>
-    <!-- edit from  -->
-    <div class="modal fade" id="editform" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Advert info</h4>
-                </div>
-                <div class="modal-body" id="modd222">
-                    <form id="file_edit_form" class="form-style-5">
-                        <input type="text" id="createdatedited" name="createdatedited" hidden><br>
-                        <input type="text" id="updatedatedited" name="updatedatedited" hidden><br>
-                        <p>Name:<br></p>
-                        <input type="text" id="filenameedited" name="filenameedited" title="Dont use underscore '_'"
-                            pattern="[^_]+" required><br>
-                        Type:<br></p>
-                        <p><input type="radio" name="typeedited" value="job" required> Job<br>
-                            <input type="radio" name="typeedited" value="event"> Event<br>
-                            <input type="radio" name="typeedited" value="training"> Training<br>
-                            <br></p>
-                        <p>Description:<br></p>
-                        <input type="text" id="filecontentedited" name="filecontentedited"><br>
-                        <p>Picture:<br></p>
-                        <input type="text" id="eventpictureedited" name="eventpictureedited"><br>
-                        <div id="extraeditformfields"></div>
-                        <p>Contact:<br> </p>
-                        <input type="email" id="emailaddressedited" name="emailaddressedited"><br>
-                        <input type="submit" value="Upload Edited File">
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- editform -->
+
     <!-- create from  -->
     <div class="modal fade" id="createform" role="dialog">
         <div class="modal-dialog">
@@ -103,6 +67,7 @@
                 <div class="modal-body" id="modd222">
                     <form id="event_create_form" class="form-style-5">
                         <input type="text" id="createdat" name="createdat" hidden><br>
+                        <input type="text" id="updatedat" name="updatedat" hidden><br>
                         <p>Type:</p>
                         <p><input type="radio" name="type" value="job" required> Job<br>
                             <input type="radio" name="type" value="event"> Event<br>
@@ -118,7 +83,7 @@
                         <div id="extraformfields"></div>
                         <p>Contact:</p>
                         <input type="email" id="emailaddress" name="emailaddress"><br>
-                        <input type="submit" value="Create">
+                        <input type="submit" value="Submit">
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -160,7 +125,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#editform"
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#createform"
                         data-dismiss="modal" id="eventedit">Edit</button>
                     <button type="button" class="btn btn-default" id="eventdelete">Delete</button>
                 </div>
